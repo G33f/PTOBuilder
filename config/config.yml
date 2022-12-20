@@ -1,0 +1,9 @@
+## ------------ Paragon The Overprime Builder ------------
+## ----- Test config and config organisation example -----
+
+PTOBuilder_storage:
+  host: localhost
+  port: 5432
+  database: PTOBuilder
+  username: postgres
+  password: postgres
