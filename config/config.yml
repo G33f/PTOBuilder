@@ -7,3 +7,9 @@ PTOBuilder_storage:
   database: "PTOBuilder"
   username: "postgres"
   password: "postgres"
+
+WebServer:
+  host: "localhost"
+  port: "8080"
+  writeTimeout: 15
+  readTimeout: 15

@@ -2,9 +2,11 @@ package main
 
 import (
 	"PTOBuilder/config"
+	"PTOBuilder/internal/server"
 	"PTOBuilder/pkg/storage"
 	"context"
 	"fmt"
+	"github.com/julienschmidt/httprouter"
 )
 
 func main() {
@@ -18,6 +20,12 @@ func main() {
 		fmt.Println(err)
 	}
 	err = repo.Ping(ctx)
+	if err != nil {
+		fmt.Println(err)
+	}
+	router := httprouter.New()
+	s := server.NewServer(router)
+	err = s.Run()
 	if err != nil {
 		fmt.Println(err)
 	}
