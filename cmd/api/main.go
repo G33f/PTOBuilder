@@ -25,6 +25,8 @@ func main() {
 		logger.Fatal(err)
 	}
 	router := httprouter.New()
+	//characterHandler := character.NewHandler(&logger)
+	//characterHandler.MainRoutsHandler(router)
 	s := server.NewServer(router)
 	err = s.Run()
 	if err != nil {
