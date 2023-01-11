@@ -9,6 +9,14 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
+//TODO DEL THIS
+//
+//func tmp() {
+//	a, _ := calculator.Calculate(fmt.Sprintf("%f + %f", 1.2, 1.3))
+//	fmt.Println(a)
+//}
+//----------
+
 func main() {
 	logger := logging.GetLogger()
 	ctx := context.Background()
