@@ -1,7 +1,9 @@
 package config
 
 import (
+	"PTOBuilder/pkg/logging"
 	"github.com/spf13/viper"
+	"sync"
 )
 
 func init() {
@@ -10,7 +12,14 @@ func init() {
 	viper.SetConfigName("config")
 }
 
-func GetConfigs() error {
-	err := viper.ReadInConfig()
-	return err
+var once sync.Once
+
+func GetConfigs() {
+	once.Do(func() {
+		logger := logging.GetLogger()
+		err := viper.ReadInConfig()
+		if err != nil {
+			logger.Fatal(err)
+		}
+	})
 }

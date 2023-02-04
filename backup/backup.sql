@@ -19,14 +19,14 @@ CREATE TABLE PTOBuilder.hero(
     scale_mag_armor float,
     scale_health float,
     scale_attack_spd float,
-    creat_time timestamp,
+    create_time timestamp,
     update_time timestamp
 )
 
 CREATE TABLE PTOBuilder.stat(
     id int primary key,
     name text not null,
-    creat_time timestamp,
+    create_time timestamp,
     update_time timestamp
 )
 
@@ -62,5 +62,7 @@ CREATE TABLE PTOBuilder.hero_skill_stat(
 CREATE TABLE PTOBuilder.formula(
     id int primary key,
     format text,
-    variables float[]
+    variables float[],
+    creat_time timestamp,
+    update_time timestamp
 );

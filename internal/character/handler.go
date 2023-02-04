@@ -16,8 +16,15 @@ func NewHandler(l *logging.Logger) handlers.Handler {
 }
 
 func (h *handler) MainRoutsHandler(router *httprouter.Router) {
-	router.POST("/Character/Create", h.CreateCharacter)
+	router.POST("/Character/Hero/Create", h.CreateCharacter)
+	router.POST("/Character/Role/Create", h.CreateRole)
 	router.GET("/Character/Get", h.GetCharacter)
+}
+
+func (h *handler) CreateRole(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	w.Write([]byte("this is create role"))
+	w.WriteHeader(200)
+	h.log.Info("rout CreateRole work right")
 }
 
 func (h *handler) CreateCharacter(w http.ResponseWriter, r *http.Request, params httprouter.Params) {

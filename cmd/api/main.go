@@ -11,6 +11,10 @@ import (
 
 //TODO DEL THIS
 //
+// ("50 + 0.5 * %f", hero.mana
+//
+// ("50 + 0.5 * %fjfjasf")
+//
 //func tmp() {
 //	a, _ := calculator.Calculate(fmt.Sprintf("%f + %f", 1.2, 1.3))
 //	fmt.Println(a)
@@ -20,10 +24,7 @@ import (
 func main() {
 	logger := logging.GetLogger()
 	ctx := context.Background()
-	err := config.GetConfigs()
-	if err != nil {
-		logger.Fatal(err)
-	}
+	config.GetConfigs()
 	repo, err := storage.NewStorage(ctx)
 	if err != nil {
 		logger.Fatal(err)
