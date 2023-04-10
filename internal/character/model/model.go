@@ -1,11 +1,12 @@
-package character
+package model
 
 type Role struct {
-	Name       string
-	Characters []Character
+	Name       string      `json:"name,omitempty"`
+	Characters []Character `json:"characters,omitempty"`
 }
 
 type Character struct {
+	RoleName    string
 	Name        string
 	ImgUrl      string
 	Description string
