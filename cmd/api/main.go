@@ -2,42 +2,21 @@ package main
 
 import (
 	"PTOBuilder/config"
-	"PTOBuilder/internal/character"
-	"PTOBuilder/internal/server"
+	"PTOBuilder/internal/api"
 	"PTOBuilder/pkg/logging"
-	"PTOBuilder/pkg/storage"
-	"context"
-	"github.com/julienschmidt/httprouter"
 )
 
-//TODO DEL THIS
-// ("50 + 0.5 * %fjfjasf")
-//
-//func tmp() {
-//	a, _ := calculator.Calculate(fmt.Sprintf("%f + %f", 1.2, 1.3))
-//	fmt.Println(a)
-//}
-//----------
-
 func main() {
-	logger := logging.GetLogger()
-	ctx := context.Background()
+	// Get logger for to display and save all api behavior
+	log := logging.GetLogger()
+
+	// Read all configurations from the yaml config file using the viper module
 	config.GetConfigs()
-	repo, err := storage.NewStorage(ctx)
-	if err != nil {
-		logger.Fatal(err)
-	}
-	err = repo.Ping(ctx)
-	if err != nil {
-		logger.Fatal(err)
-	}
-	router := httprouter.New()
-	characterHandler := character.NewHandler(&logger)
-	characterHandler.MainRoutsHandler(router)
-	s := server.NewServer(router)
-	err = s.Run()
-	if err != nil {
-		logger.Fatal(err)
-	}
-	logger.Info("all done right")
+
+	// Create and initialize api structure with all dependencies
+	API := api.NewAPI(&log)
+	API.Init()
+
+	// Start our REST API
+	API.Start()
 }

@@ -10,11 +10,15 @@ import (
 )
 
 type handler struct {
-	log *logging.Logger
+	log     *logging.Logger
+	useCase *UseCase
 }
 
-func NewHandler(l *logging.Logger) handlers.Handler {
-	return &handler{l}
+func NewHandler(log *logging.Logger, useCase *UseCase) handlers.Handler {
+	return &handler{
+		log:     log,
+		useCase: useCase,
+	}
 }
 
 func (h *handler) MainRoutsHandler(router *httprouter.Router) {

@@ -5,8 +5,9 @@ PTOBuilder_storage:
   host: "localhost"
   port: "5432"
   database: "PTOBuilder"
-  username: "postgres"
-  password: "postgres"
+  username: "admin"
+  password: "admin"
+  maxAttempt: 5
 
 WebServer:
   host: "localhost"
