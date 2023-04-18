@@ -6,7 +6,7 @@ import (
 )
 
 type Repo interface {
-	CreateRole(ctx context.Context, role *model.Role)
-	CreateCharacter(ctx context.Context, character *model.Character)
-	GetCharacters(ctx context.Context) *model.Character
+	CreateRole(ctx context.Context, role *model.Role) error
+	CreateCharacter(ctx context.Context, character *model.Character) error
+	GetCharacter(ctx context.Context, characterName string) (*model.Character, error)
 }

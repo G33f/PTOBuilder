@@ -1,68 +1,61 @@
-CREATE DATABASE PTOBuilder
+create table roles
+(
+    id bigserial primary key,
+    name text
+);
 
-CREATE TABLE PTOBuilder.role(
-    id int primary key,
-    name text not null,
-    creat_time timestamp,
-    update_time timestamp
-)
+create table characters
+(
+    id bigserial primary key,
+    role_id bigint,
+    name text,
+    image_url text,
+    description text,
+    constraint fk_character_role_id foreign key (role_id) references roles(id)
+);
 
-CREATE TABLE PTOBuilder.hero(
-    id int primary key,
-    name text not null,
-    img_url text not null,
-    role_id int foreign key references PTOBuilder.role(id),
-    description text not null,
-    scale_phys_dmg float,
-    scale_mag_dmg float,
-    scale_phys_armor float,
-    scale_mag_armor float,
-    scale_health float,
-    scale_attack_spd float,
-    create_time timestamp,
-    update_time timestamp
-)
-
-CREATE TABLE PTOBuilder.stat(
-    id int primary key,
-    name text not null,
-    create_time timestamp,
-    update_time timestamp
-)
-
-CREATE TABLE PTOBuilder.hero_stats(
-    id int primary key,
-    hero_id int foreign key references PTOBuilder.hero(id),
-    stat_id int foreign key references PTOBuilder.stat(id),
-    value int default 0,
-    creat_time timestamp,
-    update_time timestamp
-)
-
-CREATE TABLE PTOBuilder.hero_skill(
-    id int primary key,
-    name text not null,
-    hero_id int foreign key references PTOBuilder.hero(id),
-    img_url text,
+create table skills
+(
+    id bigserial primary key,
+    character_id bigint,
+    name text,
+    image_url text,
     description text,
     button text,
-    creat_time timestamp,
-    update_time timestamp
-)
-
-CREATE TABLE PTOBuilder.hero_skill_stat(
-    id int primary key,
-    hero_skill_id int foreign key references PTOBuilder.hero_skill(id),
-    stat_id int foreign key references PTOBuilder.stat(id),
-    value float default 0.0,
-    creat_time timestamp,
-    update_time timestamp
-)
-
-CREATE TABLE PTOBuilder.formula(
-    id int primary key,
-    format text,
-    variables float[],
-    creat_time timestamp,
-    update_time timestamp
+    constraint fk_skill_character_id foreign key (character_id) references characters(id)
 );
+
+create table stats
+(
+    id bigserial primary key,
+    character_id bigint,
+    name text,
+    value int,
+    scaling int,
+    constraint fk_stat_character_id foreign key (character_id) references characters(id)
+);
+
+create table formulas
+(
+    id bigserial primary key,
+    skill_id bigint,
+    level int,
+    formula text,
+    stats_name text[],
+    constraint fk_formula_skill_id foreign key (skill_id) references skills(id)
+);
+
+-- select (characters.id, roles.name, characters.description, characters.image_url, characters.name)
+--     from characters join roles
+--     on roles.id = characters.role_id
+--         where characters.id = $1;
+
+-- select stats.id, stats.name, stats.scaling, stats.value from stats
+--     where stats.character_id = $1;
+
+-- select skills.id, skills.name, skills.image_url, skills.description, skills.button from skills
+--     where skills.character_id = $1
+--     order by skills.id;
+
+select formulas.id, formulas.level, formulas.formula, formulas.stats_name from formulas
+       where formulas.skill_id = $1;

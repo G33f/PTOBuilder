@@ -1,9 +1,12 @@
 package character
 
-import "PTOBuilder/internal/character/model"
+import (
+	"PTOBuilder/internal/character/model"
+	"context"
+)
 
 type UseCase interface {
-	CreateRole(role *model.Role)
-	CreateCharacter(character *model.Character)
-	GetCharacters() *model.Character
+	CreateRole(ctx context.Context, role *model.Role) error
+	CreateCharacter(ctx context.Context, character *model.Character) error
+	GetCharacter(ctx context.Context, characterName string) (*model.Character, error)
 }

@@ -1,7 +1,9 @@
 package handlers
 
-import "github.com/julienschmidt/httprouter"
+import (
+	"github.com/go-chi/chi/v5"
+)
 
 type Handler interface {
-	MainRoutsHandler(router *httprouter.Router)
+	MainRoutsHandler(router chi.Router)
 }

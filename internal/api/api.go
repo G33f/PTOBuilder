@@ -8,8 +8,9 @@ import (
 	"PTOBuilder/pkg/logging"
 	"PTOBuilder/pkg/storage"
 	"context"
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/julienschmidt/httprouter"
 )
 
 type API struct {
@@ -39,14 +40,17 @@ func (api *API) Init() {
 
 	// Server creation
 	api.log.Info("Creating Server...")
-	router := httprouter.New()
+	router := chi.NewRouter()
+
+	router.Use(middleware.Logger)
+
 	api.apiServer = server.NewServer(router)
 
 	// Creating handler, interfaces UseCase and repository for character
 	api.log.Info("Initialising character...")
 	characterRepo := characterR.NewRepo(api.log, api.repo)
-	characterUseCase := characterUC.NewUseCase(api.log, &characterRepo)
-	characterHandler := character.NewHandler(api.log, &characterUseCase)
+	characterUseCase := characterUC.NewUseCase(api.log, characterRepo)
+	characterHandler := character.NewHandler(api.log, characterUseCase)
 	characterHandler.MainRoutsHandler(router)
 }
 

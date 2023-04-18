@@ -2,7 +2,7 @@ package server
 
 import (
 	"fmt"
-	"github.com/julienschmidt/httprouter"
+	"github.com/go-chi/chi/v5"
 	"github.com/spf13/viper"
 	"net/http"
 	"time"
@@ -16,7 +16,7 @@ type Server struct {
 	serverHTTP   http.Server
 }
 
-func NewServer(router *httprouter.Router) *Server {
+func NewServer(router chi.Router) *Server {
 	s := Server{
 		ip:           viper.GetString("WebServer.host"),
 		port:         viper.GetString("WebServer.port"),
@@ -27,7 +27,7 @@ func NewServer(router *httprouter.Router) *Server {
 	return &s
 }
 
-func (s *Server) createHTTPServer(router *httprouter.Router) {
+func (s *Server) createHTTPServer(router chi.Router) {
 	s.serverHTTP = http.Server{
 		Addr:         fmt.Sprintf("%s:%s", s.ip, s.port),
 		Handler:      router,

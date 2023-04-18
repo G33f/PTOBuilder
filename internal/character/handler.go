@@ -4,50 +4,86 @@ import (
 	"PTOBuilder/internal/character/model"
 	"PTOBuilder/internal/handlers"
 	"PTOBuilder/pkg/logging"
+	"context"
 	"encoding/json"
-	"github.com/julienschmidt/httprouter"
+	"fmt"
+	"github.com/go-chi/chi/v5"
 	"net/http"
 )
 
 type handler struct {
 	log     *logging.Logger
-	useCase *UseCase
+	useCase UseCase
 }
 
-func NewHandler(log *logging.Logger, useCase *UseCase) handlers.Handler {
+func NewHandler(log *logging.Logger, useCase UseCase) handlers.Handler {
 	return &handler{
 		log:     log,
 		useCase: useCase,
 	}
 }
 
-func (h *handler) MainRoutsHandler(router *httprouter.Router) {
-	router.POST("/Character/Hero/Create", h.CreateCharacter)
-	router.POST("/Character/Role/Create", h.CreateRole)
-	router.GET("/Character/Get", h.GetCharacters)
+func (h *handler) MainRoutsHandler(router chi.Router) {
+	router.Post("/Character/Hero/Create", h.CreateCharacter)
+	router.Post("/Character/Role/Create", h.CreateRole)
+	router.Get("/Character/Get", h.GetCharacter)
 }
 
-func (h *handler) CreateRole(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+func (h *handler) CreateRole(w http.ResponseWriter, r *http.Request) {
+	ctx := context.Background()
 	role := model.Role{}
 	dec := json.NewDecoder(r.Body)
 	err := dec.Decode(&role)
 	if err != nil {
-		w.Write([]byte("cannot unmarshal body"))
-		w.WriteHeader(400)
+		w.WriteHeader(http.StatusBadRequest)
 		h.log.Info(err)
+		return
 	}
-	w.WriteHeader(200)
-	h.log.Info("rout CreateRole work right")
+	if err = h.useCase.CreateRole(ctx, &role); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		h.log.Info(err)
+		return
+	}
+	fmt.Println(role)
+	w.WriteHeader(http.StatusCreated)
+	h.log.Info("role CreateRole work right")
 }
 
-func (h *handler) CreateCharacter(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
-	w.Write([]byte("this is create character"))
-	w.WriteHeader(200)
-	h.log.Info("rout CreateCharacter work right")
+func (h *handler) CreateCharacter(w http.ResponseWriter, r *http.Request) {
+	ctx := context.Background()
+	hero := model.Character{}
+	dec := json.NewDecoder(r.Body)
+	err := dec.Decode(&hero)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		h.log.Info(err)
+		return
+	}
+	if err = h.useCase.CreateCharacter(ctx, &hero); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		h.log.Info(err)
+		return
+	}
+	fmt.Println(hero)
+	w.WriteHeader(http.StatusCreated)
+	h.log.Info("hero CreateRole work right")
 }
 
-func (h *handler) GetCharacters(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
-	w.Write([]byte("this is get character"))
-	w.WriteHeader(200)
-	h.log.Info("rout GetCharacter work right")
+func (h *handler) GetCharacter(w http.ResponseWriter, r *http.Request) {
+	ctx := context.Background()
+	hero, err := h.useCase.GetCharacter(ctx, "Feng")
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		h.log.Info(err)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	err = json.NewEncoder(w).Encode(hero)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		h.log.Info(err)
+		return
+	}
+	w.WriteHeader(http.StatusCreated)
+	h.log.Info("hero GetCharacter work right")
 }
