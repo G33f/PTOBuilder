@@ -5,6 +5,9 @@ import (
 	characterR "PTOBuilder/internal/character/repo"
 	characterUC "PTOBuilder/internal/character/usecase"
 	"PTOBuilder/internal/server"
+	"PTOBuilder/internal/user"
+	userR "PTOBuilder/internal/user/repo"
+	userUC "PTOBuilder/internal/user/usecase"
 	"PTOBuilder/pkg/logging"
 	"PTOBuilder/pkg/storage"
 	"context"
@@ -48,10 +51,23 @@ func (api *API) Init() {
 
 	// Creating handler, interfaces UseCase and repository for character
 	api.log.Info("Initialising character...")
+
 	characterRepo := characterR.NewRepo(api.log, api.repo)
 	characterUseCase := characterUC.NewUseCase(api.log, characterRepo)
 	characterHandler := character.NewHandler(api.log, characterUseCase)
+
+	api.log.Info("character initialised")
+
+	api.log.Info("Initialising user...")
+
+	userRepo := userR.NewRepo(api.log, api.repo)
+	userUserCase := userUC.NewUseCase(api.log, userRepo)
+	userHandler := user.NewHandler(api.log, userUserCase)
+
+	api.log.Info("user initialised")
+
 	characterHandler.MainRoutsHandler(router)
+	userHandler.MainRoutsHandler(router)
 }
 
 func (api *API) Start() {

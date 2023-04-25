@@ -6,7 +6,6 @@ import (
 	"PTOBuilder/pkg/logging"
 	"context"
 	"encoding/json"
-	"fmt"
 	"github.com/go-chi/chi/v5"
 	"net/http"
 )
@@ -44,7 +43,6 @@ func (h *handler) CreateRole(w http.ResponseWriter, r *http.Request) {
 		h.log.Info(err)
 		return
 	}
-	fmt.Println(role)
 	w.WriteHeader(http.StatusCreated)
 	h.log.Info("role CreateRole work right")
 }
@@ -64,7 +62,6 @@ func (h *handler) CreateCharacter(w http.ResponseWriter, r *http.Request) {
 		h.log.Info(err)
 		return
 	}
-	fmt.Println(hero)
 	w.WriteHeader(http.StatusCreated)
 	h.log.Info("hero CreateRole work right")
 }

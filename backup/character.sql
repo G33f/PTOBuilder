@@ -44,18 +44,3 @@ create table formulas
     stats_name text[],
     constraint fk_formula_skill_id foreign key (skill_id) references skills(id)
 );
-
--- select (characters.id, roles.name, characters.description, characters.image_url, characters.name)
---     from characters join roles
---     on roles.id = characters.role_id
---         where characters.id = $1;
-
--- select stats.id, stats.name, stats.scaling, stats.value from stats
---     where stats.character_id = $1;
-
--- select skills.id, skills.name, skills.image_url, skills.description, skills.button from skills
---     where skills.character_id = $1
---     order by skills.id;
-
-select formulas.id, formulas.level, formulas.formula, formulas.stats_name from formulas
-       where formulas.skill_id = $1;
