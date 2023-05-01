@@ -1,9 +1,9 @@
 package repo
 
 import (
-	//"PTOBuilder/internal/user"
-	packageUser "PTOBuilder/internal/user"
-	"PTOBuilder/internal/user/model"
+	//"PTOBuilder/internal/auth"
+	packageUser "PTOBuilder/internal/auth"
+	"PTOBuilder/internal/auth/model"
 	"PTOBuilder/pkg/logging"
 	"PTOBuilder/pkg/storage"
 	"PTOBuilder/pkg/utils"
@@ -22,7 +22,7 @@ func NewRepo(log *logging.Logger, client storage.Client) packageUser.Repo {
 	}
 }
 
-func (r *repo) UserRegistration(ctx context.Context, user *model.User) error {
+func (r *repo) AddUser(ctx context.Context, user *model.User) error {
 	q := `insert into users (email, name, password)
     		  values ($1, $2, $3)
     		  returning users.id;`

@@ -14,3 +14,5 @@ WebServer:
   port: "8080"
   writeTimeout: 15
   readTimeout: 15
+
+secret: "nz0/OcESzzU2FbKUWT.r1ykFVLnCbRA5JWIq6eMqe40TKqtoU6"

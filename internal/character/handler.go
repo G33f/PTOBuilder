@@ -3,6 +3,7 @@ package character
 import (
 	"PTOBuilder/internal/character/model"
 	"PTOBuilder/internal/handlers"
+	authMiddleware "PTOBuilder/internal/middleware"
 	"PTOBuilder/pkg/logging"
 	"context"
 	"encoding/json"
@@ -11,21 +12,29 @@ import (
 )
 
 type handler struct {
-	log     *logging.Logger
-	useCase UseCase
+	log            *logging.Logger
+	useCase        UseCase
+	authMiddleware authMiddleware.AuthMiddleware
 }
 
-func NewHandler(log *logging.Logger, useCase UseCase) handlers.Handler {
+func NewHandler(log *logging.Logger, useCase UseCase, authMiddleware authMiddleware.AuthMiddleware) handlers.Handler {
 	return &handler{
-		log:     log,
-		useCase: useCase,
+		log:            log,
+		useCase:        useCase,
+		authMiddleware: authMiddleware,
 	}
 }
 
 func (h *handler) MainRoutsHandler(router chi.Router) {
-	router.Post("/Character/Hero/Create", h.CreateCharacter)
-	router.Post("/Character/Role/Create", h.CreateRole)
-	router.Get("/Character/Get", h.GetCharacter)
+	router.Group(func(router chi.Router) {
+		router.Use(h.authMiddleware.CheckToken)
+		router.Post("/Character/Hero/Create", h.CreateCharacter)
+		router.Post("/Character/Role/Create", h.CreateRole)
+	})
+
+	router.Group(func(router chi.Router) {
+		router.Get("/Character/Get", h.GetCharacter)
+	})
 }
 
 func (h *handler) CreateRole(w http.ResponseWriter, r *http.Request) {
@@ -68,7 +77,13 @@ func (h *handler) CreateCharacter(w http.ResponseWriter, r *http.Request) {
 
 func (h *handler) GetCharacter(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
-	hero, err := h.useCase.GetCharacter(ctx, "Feng")
+	name := r.URL.Query().Get("name")
+	if name == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		h.log.Info("Character name was empty")
+		return
+	}
+	hero, err := h.useCase.GetCharacter(ctx, name)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		h.log.Info(err)
