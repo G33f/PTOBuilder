@@ -92,9 +92,7 @@ func (h *handler) SignIn(w http.ResponseWriter, r *http.Request) {
 	h.mu.Unlock()
 	w.Header().Add("Authorization", fmt.Sprintf("Bearer %s", token))
 	w.WriteHeader(http.StatusOK)
-	fmt.Println(token)
 	h.log.Info("User logIn!")
-	fmt.Println(h.jwt)
 }
 
 func (h *handler) CheckAuth(token string) bool {
