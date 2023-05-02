@@ -27,6 +27,7 @@ func NewHandler(log *logging.Logger, useCase UseCase, mu *sync.RWMutex) (handler
 		mu:      mu,
 		jwt:     map[string]model.User{},
 	}
+	go h.tokensTracking()
 	return &h, h.CheckAuth
 }
 
@@ -74,10 +75,11 @@ func (h *handler) SignIn(w http.ResponseWriter, r *http.Request) {
 	h.mu.Lock()
 	h.jwt[token] = user
 	h.mu.Unlock()
-	r.Header.Add("Authorization", fmt.Sprintf("Bearer %s", token))
+	w.Header().Add("Authorization", fmt.Sprintf("Bearer %s", token))
 	w.WriteHeader(http.StatusOK)
 	fmt.Println(token)
 	h.log.Info("User logIn!")
+	fmt.Println(h.jwt)
 }
 
 func (h *handler) CheckAuth(token string) bool {
@@ -89,8 +91,15 @@ func (h *handler) CheckAuth(token string) bool {
 	return false
 }
 
-func (h *handler) tokenUpdate() {
+func (h *handler) tokensTracking() {
 	for {
-		time.Sleep(time.Minute)
+		time.Sleep(15 * time.Minute)
+		h.mu.Lock()
+		for k, _ := range h.jwt {
+			if err := h.useCase.ValidToken(k); err != nil {
+				delete(h.jwt, k)
+			}
+		}
+		h.mu.Unlock()
 	}
 }
