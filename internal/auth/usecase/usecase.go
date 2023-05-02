@@ -48,19 +48,19 @@ func (u *useCase) SignUp(ctx context.Context, user *model.User) error {
 
 func (u *useCase) isUserExist(ctx context.Context, user *model.User) bool {
 	err := u.repo.GetUser(ctx, user)
-	if err == nil {
+	if err != nil {
 		return false
 	}
 	return true
 }
 
 func (u *useCase) SignIn(ctx context.Context, user *model.User) (string, error) {
-	user1 := *user
-	err := u.repo.GetUser(ctx, &user1)
+	password := user.Password
+	err := u.repo.GetUser(ctx, user)
 	if err != nil {
 		return "", fmt.Errorf("user not found")
 	}
-	if bcrypt.CompareHashAndPassword([]byte(user1.Password), []byte(user.Password)) != nil {
+	if bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)) != nil {
 		return "", fmt.Errorf("wrong password")
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, &model.Claims{

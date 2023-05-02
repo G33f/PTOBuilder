@@ -27,7 +27,8 @@ func NewHandler(log *logging.Logger, useCase UseCase, authMiddleware authMiddlew
 
 func (h *handler) MainRoutsHandler(router chi.Router) {
 	router.Group(func(router chi.Router) {
-		router.Use(h.authMiddleware.CheckToken)
+		router.Use(h.authMiddleware.CheckAuth)
+		router.Use(h.authMiddleware.CheckAdmin)
 		router.Post("/Character/Hero/Create", h.CreateCharacter)
 		router.Post("/Character/Role/Create", h.CreateRole)
 	})

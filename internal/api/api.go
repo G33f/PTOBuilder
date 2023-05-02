@@ -58,11 +58,11 @@ func (api *API) Init() {
 	signingKey := viper.GetString("secret")
 	userRepo := userR.NewRepo(api.log, api.repo)
 	userUserCase := userUC.NewUseCase(api.log, userRepo, []byte(signingKey))
-	userHandler, userMiddleware := auth.NewHandler(api.log, userUserCase, &userMutex)
+	userHandler, validationFunctions := auth.NewHandler(api.log, userUserCase, &userMutex)
 
 	api.log.Info("auth initialised")
 
-	mid := authMiddleware.NewMiddleware(userMiddleware, api.log)
+	mid := authMiddleware.NewMiddleware(validationFunctions.CheckAuth, validationFunctions.CheckAdmin, api.log)
 
 	// Creating handler, interfaces UseCase and repository for character
 	api.log.Info("Initialising character...")

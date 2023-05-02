@@ -13,6 +13,16 @@ import (
 	"time"
 )
 
+const (
+	admin = "admin"
+	user  = "user"
+)
+
+type ValidationFunctions struct {
+	CheckAdmin func(string) bool
+	CheckAuth  func(string) bool
+}
+
 type handler struct {
 	log     *logging.Logger
 	useCase UseCase
@@ -20,15 +30,20 @@ type handler struct {
 	jwt     map[string]model.User
 }
 
-func NewHandler(log *logging.Logger, useCase UseCase, mu *sync.RWMutex) (handlers.Handler, func(string) bool) {
+func NewHandler(log *logging.Logger, useCase UseCase, mu *sync.RWMutex) (handlers.Handler, ValidationFunctions) {
 	h := handler{
 		log:     log,
 		useCase: useCase,
 		mu:      mu,
 		jwt:     map[string]model.User{},
 	}
+
+	validationFunctions := ValidationFunctions{
+		CheckAdmin: h.CheckAdmin,
+		CheckAuth:  h.CheckAuth,
+	}
 	go h.tokensTracking()
-	return &h, h.CheckAuth
+	return &h, validationFunctions
 }
 
 func (h *handler) MainRoutsHandler(router chi.Router) {
@@ -86,6 +101,15 @@ func (h *handler) CheckAuth(token string) bool {
 	h.mu.RLock()
 	defer h.mu.RUnlock()
 	if _, ok := h.jwt[token]; ok {
+		return true
+	}
+	return false
+}
+
+func (h *handler) CheckAdmin(token string) bool {
+	h.mu.RLock()
+	defer h.mu.RUnlock()
+	if h.jwt[token].Role == admin {
 		return true
 	}
 	return false
